@@ -1,4 +1,5 @@
 import { _decorator, Animation, Component, EventMouse, Input, input, Node } from 'cc';
+import { GameManager } from './GameManager';
 const { ccclass, property } = _decorator;
 
 @ccclass('PlayerController')
@@ -12,11 +13,15 @@ export class PlayerController extends Component {
     @property(Animation)
     private jumpAnimation:Animation = null;
 
+
     start() {
         input.on(Input.EventType.MOUSE_DOWN, this.onMouseDownEvent, this);
     }
 
     update(deltaTime: number) {
+        if (!GameManager.instance.isPlaying()) {
+            return;
+        }
         if (this.jumping) {
             const position = this.node.position;
 
@@ -38,6 +43,9 @@ export class PlayerController extends Component {
     }
 
     private onMouseDownEvent(event: EventMouse) {
+        if (!GameManager.instance.isPlaying()) {
+            return;
+        }
         if (this.jumping) {
             return;
         }
