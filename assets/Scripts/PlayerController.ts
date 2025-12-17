@@ -76,8 +76,12 @@ export class PlayerController extends Component {
         return this.curStep;
     }
 
-    public initStep() {
+    public init() {
         this.curStep = 0;
+        const position = this.node.position;
+        this.node.setPosition(0, position.y, position.z);
+
+        director.emit("PlayerJumped", this.curStep);
     }
 }
 

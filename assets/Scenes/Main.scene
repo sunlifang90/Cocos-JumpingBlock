@@ -649,6 +649,9 @@
       "__uuid__": "82c9aab0-fed6-44b9-b351-5653bf4ee3ef",
       "__expectedType__": "cc.Prefab"
     },
+    "playerController": {
+      "__id__": 20
+    },
     "startMenu": {
       "__id__": 24
     },

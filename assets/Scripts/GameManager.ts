@@ -1,4 +1,5 @@
 import { _decorator, Component, director, instantiate, Label, Node, Prefab } from 'cc';
+import { PlayerController } from './PlayerController';
 const { ccclass, property } = _decorator;
 
 enum BolckType {
@@ -25,6 +26,9 @@ export class GameManager extends Component {
     private blocks:BolckType[] = [];
     private gameStatus:GameStatus = GameStatus.MENU;
     
+    @property(PlayerController)
+    private playerController:PlayerController = null;
+
     @property(Node)
     private startMenu:Node = null;
 
@@ -44,6 +48,22 @@ export class GameManager extends Component {
 
     private onJumped(value:number) {
         this.stepLabel.string = value.toString();
+        this.checkResult(value);
+    }
+
+    private checkResult(step:number) {
+        if (step >= this.blocks.length) {
+            // 胜利
+            this.setGameStatus(GameStatus.MENU);
+            return;
+        } else {
+            const blockType = this.blocks[step];
+            if (blockType === BolckType.NONE) {
+                // 失败
+                this.setGameStatus(GameStatus.MENU);
+                return;
+            }
+        }
     }
 
     /**
@@ -54,6 +74,7 @@ export class GameManager extends Component {
         if (gameStatus === GameStatus.PLAYING) {
             // 开始游戏
             this.initBlocks();
+            this.playerController.init();
             this.gameStatus = GameStatus.PLAYING;
             this.startMenu.active = false;
         } else if (gameStatus === GameStatus.MENU) {
