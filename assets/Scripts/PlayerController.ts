@@ -3,12 +3,31 @@ const { ccclass, property } = _decorator;
 
 @ccclass('PlayerController')
 export class PlayerController extends Component {
+
+    private jumping = false;
+    private jumpTime = 0.3;//0.3s内跳完
+    private jumpedTime = 0;//已跳多少时间
+    private jumpSpeed = 0;
+
     start() {
         input.on(Input.EventType.MOUSE_DOWN, this.onMouseDownEvent, this);
     }
 
     update(deltaTime: number) {
-        
+        if (this.jumping) {
+            const position = this.node.position;
+
+            const remainingTime = this.jumpTime-this.jumpedTime;
+            if (remainingTime > deltaTime) {
+                // 剩余时间还多，没渲染完
+                this.jumpedTime+=deltaTime;
+                this.node.setPosition(position.x + this.jumpSpeed * deltaTime, position.y, position.z);
+            } else {
+                // 时间到了
+                this.node.setPosition(position.x + this.jumpSpeed * remainingTime, position.y, position.z);
+                this.jumping = false;
+            }
+        }
     }
 
     protected onDestroy(): void {
@@ -18,22 +37,20 @@ export class PlayerController extends Component {
     private onMouseDownEvent(event: EventMouse) {
         switch(event.getButton()) {
             case EventMouse.BUTTON_LEFT:
-                this.jumpOneStep();
+                this.jumpStep(1);
                 break;
             case EventMouse.BUTTON_RIGHT:
-                this.jumpTwoSteps();
+                this.jumpStep(2);
                 break;
         }
     }
 
-    private jumpOneStep() {
-        const position = this.node.position;
-        this.node.setPosition(position.x + 40, position.y, position.z);
-    }
-
-    private jumpTwoSteps() {
-        const position = this.node.position;
-        this.node.setPosition(position.x + 80, position.y, position.z);
+    private jumpStep(step:number) {
+        if (!this.jumping) {
+            this.jumping = true;
+            this.jumpedTime = 0;
+            this.jumpSpeed = step*40/this.jumpTime;
+        }
     }
 }
 
