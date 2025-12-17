@@ -1,4 +1,4 @@
-import { _decorator, Component, EventMouse, Input, input, Node } from 'cc';
+import { _decorator, Animation, Component, EventMouse, Input, input, Node } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('PlayerController')
@@ -8,6 +8,9 @@ export class PlayerController extends Component {
     private jumpTime = 0.3;//0.3s内跳完
     private jumpedTime = 0;//已跳多少时间
     private jumpSpeed = 0;
+
+    @property(Animation)
+    private jumpAnimation:Animation = null;
 
     start() {
         input.on(Input.EventType.MOUSE_DOWN, this.onMouseDownEvent, this);
@@ -35,12 +38,17 @@ export class PlayerController extends Component {
     }
 
     private onMouseDownEvent(event: EventMouse) {
+        if (this.jumping) {
+            return;
+        }
         switch(event.getButton()) {
             case EventMouse.BUTTON_LEFT:
                 this.jumpStep(1);
+                this.jumpAnimation.play("JumpOneStep");
                 break;
             case EventMouse.BUTTON_RIGHT:
                 this.jumpStep(2);
+                this.jumpAnimation.play("JumpTwoStep");
                 break;
         }
     }
