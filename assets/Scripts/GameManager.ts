@@ -1,4 +1,4 @@
-import { _decorator, Component, instantiate, Node, Prefab } from 'cc';
+import { _decorator, Component, director, instantiate, Label, Node, Prefab } from 'cc';
 const { ccclass, property } = _decorator;
 
 enum BolckType {
@@ -26,15 +26,24 @@ export class GameManager extends Component {
     private gameStatus:GameStatus = GameStatus.MENU;
     
     @property(Node)
-    private menuUI:Node = null;
+    private startMenu:Node = null;
+
+    @property(Label)
+    private stepLabel:Label = null;
 
     start() {
         GameManager._instance = this;
         this.setGameStatus(GameStatus.MENU);
+
+        director.on("PlayerJumped", this.onJumped, this);
     }
 
     public static get instance(): GameManager {
         return this._instance;
+    }
+
+    private onJumped(value:number) {
+        this.stepLabel.string = value.toString();
     }
 
     /**
@@ -46,11 +55,11 @@ export class GameManager extends Component {
             // 开始游戏
             this.initBlocks();
             this.gameStatus = GameStatus.PLAYING;
-            this.menuUI.active = false;
+            this.startMenu.active = false;
         } else if (gameStatus === GameStatus.MENU) {
             // 返回菜单
             this.gameStatus = GameStatus.MENU;
-            this.menuUI.active = true;
+            this.startMenu.active = true;
         }
     }
 

@@ -1,4 +1,4 @@
-import { _decorator, Animation, Component, EventMouse, Input, input, Node } from 'cc';
+import { _decorator, Animation, Component, director, EventMouse, Input, input, Node } from 'cc';
 import { GameManager } from './GameManager';
 const { ccclass, property } = _decorator;
 
@@ -13,6 +13,7 @@ export class PlayerController extends Component {
     @property(Animation)
     private jumpAnimation:Animation = null;
 
+    private curStep = 0;//当前已走步长
 
     start() {
         input.on(Input.EventType.MOUSE_DOWN, this.onMouseDownEvent, this);
@@ -34,6 +35,7 @@ export class PlayerController extends Component {
                 // 时间到了
                 this.node.setPosition(position.x + this.jumpSpeed * remainingTime, position.y, position.z);
                 this.jumping = false;
+                director.emit("PlayerJumped", this.curStep);
             }
         }
     }
@@ -66,7 +68,16 @@ export class PlayerController extends Component {
             this.jumping = true;
             this.jumpedTime = 0;
             this.jumpSpeed = step*40/this.jumpTime;
+            this.curStep += step;
         }
+    }
+
+    public getCurrentStep():number {
+        return this.curStep;
+    }
+
+    public initStep() {
+        this.curStep = 0;
     }
 }
 
